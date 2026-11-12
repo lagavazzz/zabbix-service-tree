@@ -5,8 +5,13 @@ Click a bar to see how the service's state changed over the reporting period, it
 problems that affected it.
 
 ![Service tree](docs/screenshot-tree.png)
+*Service tree with SLA bars (zoomed scale), SLO markers, SLI, downtime and error budget per service.*
 
-![SLA popup](docs/screenshot-popup.png)
+![SLA popup – SLI per period](docs/screenshot-popup.png)
+*SLA popup: KPIs for the current period, SLI of the last 12 periods against the SLO, and the problems that affected the service.*
+
+![SLA popup – state over period with mouse zoom](docs/screenshot-graph.png)
+*State over period: status changes of the service during the month. Drag across the graph to zoom in; the problem list follows the selected time range.*
 
 ## Features
 
