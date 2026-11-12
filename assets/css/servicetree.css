@@ -1,0 +1,493 @@
+/*
+** Service tree module for Zabbix.
+** Copyright (C) 2026 Service tree module contributors
+**
+** This program is free software: you can redistribute it and/or modify it under the terms of
+** the GNU Affero General Public License as published by the Free Software Foundation, version 3.
+**
+** This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+** without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+** See the GNU Affero General Public License for more details.
+**
+** You should have received a copy of the GNU Affero General Public License along with this program.
+** If not, see <https://www.gnu.org/licenses/>.
+**
+** SPDX-License-Identifier: AGPL-3.0-only
+** Loaded on every page, so all selectors are prefixed with "servicetree".
+*/
+
+:root {
+	--servicetree-ok: #59db8f;
+	--servicetree-problem: #e45959;
+	--servicetree-excluded: #c5cfd4;
+	--servicetree-marker: #1f2c33;
+	--servicetree-grid: #ebeef0;
+	--servicetree-muted: #768d99;
+	--servicetree-selected: #e8f5ff;
+	--servicetree-tile-border: #dfe4e7;
+	--servicetree-accent: #0275b8;
+}
+
+html[theme="dark-theme"],
+html[theme="hc-dark"] {
+	--servicetree-excluded: #4f4f4f;
+	--servicetree-marker: #f2f2f2;
+	--servicetree-grid: #383838;
+	--servicetree-muted: #8a8a8a;
+	--servicetree-selected: #1f3a4d;
+	--servicetree-tile-border: #383838;
+	--servicetree-accent: #4796c4;
+}
+
+/* Tree table */
+
+.servicetree-table .servicetree-name-col {
+	white-space: nowrap;
+	padding-left: calc(4px + var(--servicetree-depth, 0) * 20px);
+}
+
+.servicetree-table .servicetree-toggle,
+.servicetree-table .servicetree-toggle-placeholder {
+	display: inline-block;
+	width: 20px;
+	min-width: 20px;
+	height: 20px;
+	margin-right: 2px;
+	vertical-align: middle;
+}
+
+.servicetree-table .servicetree-count {
+	margin-left: 5px;
+	color: var(--servicetree-muted);
+}
+
+.servicetree-table .servicetree-num {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.servicetree-table th.servicetree-bar-col,
+.servicetree-table td.servicetree-bar-col {
+	width: 220px;
+	min-width: 140px;
+}
+
+.servicetree-table .servicetree-cause-col {
+	max-width: 260px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.servicetree-scale-label {
+	color: var(--servicetree-muted);
+	font-weight: normal;
+}
+
+.servicetree-overridden {
+	border-bottom: 1px dotted var(--servicetree-muted);
+}
+
+.servicetree-bar {
+	position: relative;
+	display: flex;
+	height: 14px;
+	border-radius: 2px;
+	cursor: pointer;
+	background: var(--servicetree-grid);
+}
+
+.servicetree-bar:focus-visible {
+	outline: 2px solid var(--servicetree-accent);
+	outline-offset: 2px;
+}
+
+.servicetree-bar > span:not(.servicetree-bar-slo) {
+	display: block;
+	height: 100%;
+	flex: none;
+}
+
+.servicetree-bar-ok {
+	background: var(--servicetree-ok);
+}
+
+.servicetree-bar-excluded {
+	background: var(--servicetree-excluded);
+}
+
+.servicetree-bar-problem {
+	background: var(--servicetree-problem);
+}
+
+.servicetree-bar > .servicetree-bar-ok {
+	border-radius: 2px 0 0 2px;
+}
+
+.servicetree-bar .servicetree-bar-slo {
+	position: absolute;
+	top: -3px;
+	bottom: -3px;
+	width: 2px;
+	margin-left: -1px;
+	background: var(--servicetree-marker);
+}
+
+.servicetree-bar:hover {
+	box-shadow: 0 0 0 2px var(--servicetree-accent);
+}
+
+.servicetree-bar-loading {
+	height: 14px;
+	border-radius: 2px;
+	background: var(--servicetree-grid);
+	opacity: .6;
+}
+
+.servicetree-bar.servicetree-bar-empty {
+	cursor: default;
+}
+
+.servicetree-legend {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 6px;
+	margin: 8px 0;
+}
+
+.servicetree-legend .servicetree-legend-box {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+}
+
+.servicetree-legend .servicetree-legend-slo {
+	display: inline-block;
+	width: 2px;
+	height: 12px;
+	margin-left: 8px;
+	background: var(--servicetree-marker);
+}
+
+.servicetree-legend .grey {
+	margin-left: 12px;
+}
+
+/* Popup */
+
+.overlay-dialogue.servicetree-popup {
+	width: min(1100px, calc(100vw - 40px));
+	max-width: none;
+}
+
+.servicetree-popup-body {
+	min-width: 700px;
+}
+
+.servicetree-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 20px;
+	margin: 0 0 12px;
+}
+
+.servicetree-toolbar-group {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.servicetree-toolbar-group > label {
+	color: var(--servicetree-muted);
+}
+
+.servicetree-links {
+	margin-left: auto;
+	display: inline-flex;
+	gap: 14px;
+}
+
+.servicetree-select {
+	max-width: 280px;
+}
+
+.servicetree-segmented {
+	display: inline-flex;
+	border: 1px solid var(--servicetree-tile-border);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.servicetree-segmented > button {
+	margin: 0;
+	padding: 3px 9px;
+	border: 0;
+	border-right: 1px solid var(--servicetree-tile-border);
+	border-radius: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	min-height: 0;
+	height: auto;
+	line-height: 16px;
+}
+
+.servicetree-segmented > button:last-child {
+	border-right: 0;
+}
+
+.servicetree-segmented > button:hover:not(.is-selected) {
+	background: var(--servicetree-selected);
+}
+
+.servicetree-segmented > button.is-selected {
+	background: var(--servicetree-accent);
+	color: #fff;
+}
+
+.servicetree-period-caption {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.servicetree-badge {
+	padding: 1px 6px;
+	border-radius: 2px;
+	background: var(--servicetree-selected);
+	color: var(--servicetree-accent);
+	font-size: 11px;
+}
+
+.servicetree-note {
+	color: var(--servicetree-muted);
+	font-size: 11px;
+}
+
+.servicetree-kpis {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 8px;
+	margin-bottom: 14px;
+}
+
+.servicetree-kpi {
+	border: 1px solid var(--servicetree-tile-border);
+	padding: 8px 10px;
+	min-width: 0;
+}
+
+.servicetree-kpi-label {
+	display: block;
+	color: var(--servicetree-muted);
+}
+
+.servicetree-kpi-value {
+	display: block;
+	margin-top: 2px;
+	font-size: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.servicetree-section-title {
+	margin: 12px 0 6px;
+	color: var(--servicetree-muted);
+	text-transform: uppercase;
+	font-size: 11px;
+	letter-spacing: .4px;
+}
+
+.servicetree-hint {
+	color: var(--servicetree-muted);
+	font-size: 11px;
+}
+
+.servicetree-chart .servicetree-svg {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.servicetree-svg .servicetree-grid {
+	stroke: var(--servicetree-grid);
+}
+
+.servicetree-svg .servicetree-axis {
+	fill: var(--servicetree-muted);
+	font-size: 11px;
+}
+
+.servicetree-svg .servicetree-value {
+	fill: currentColor;
+	font-size: 11px;
+}
+
+.servicetree-svg .servicetree-value-bad {
+	fill: var(--servicetree-problem);
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.servicetree-svg .servicetree-line {
+	fill: none;
+	stroke: var(--servicetree-accent);
+	stroke-width: 1.5;
+}
+
+.servicetree-svg .servicetree-area {
+	fill: var(--servicetree-problem);
+	fill-opacity: .08;
+}
+
+.servicetree-svg .servicetree-future {
+	fill: var(--servicetree-grid);
+	fill-opacity: .5;
+}
+
+.servicetree-svg .servicetree-column {
+	cursor: pointer;
+	outline: none;
+}
+
+.servicetree-svg .servicetree-column-bg {
+	fill: transparent;
+}
+
+.servicetree-svg .servicetree-column:hover .servicetree-column-bg,
+.servicetree-svg .servicetree-column:focus .servicetree-column-bg {
+	fill: var(--servicetree-grid);
+}
+
+.servicetree-svg .servicetree-column-bg.is-selected {
+	fill: var(--servicetree-selected);
+}
+
+.servicetree-svg .servicetree-col-ok {
+	fill: var(--servicetree-ok);
+}
+
+.servicetree-svg .servicetree-col-bad {
+	fill: #e97659;
+}
+
+.servicetree-svg .servicetree-col-rest {
+	fill: var(--servicetree-grid);
+}
+
+.servicetree-svg .servicetree-col-rest.is-breach {
+	fill: var(--servicetree-problem);
+	fill-opacity: .25;
+}
+
+.servicetree-svg .servicetree-slo-line {
+	stroke: var(--servicetree-marker);
+	stroke-dasharray: 5 3;
+}
+
+.servicetree-svg .servicetree-slo-label {
+	fill: var(--servicetree-marker);
+	font-size: 11px;
+}
+
+.servicetree-problems-wrap {
+	overflow-x: auto;
+}
+
+.servicetree-problems .servicetree-severity {
+	color: #1f2c33;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.servicetree-empty {
+	padding: 12px 0;
+	color: var(--servicetree-muted);
+}
+
+/* Zoom and paging */
+
+.servicetree-svg.servicetree-zoomable {
+	cursor: crosshair;
+	user-select: none;
+}
+
+.servicetree-svg .servicetree-zoom-selection {
+	fill: var(--servicetree-accent);
+	fill-opacity: .15;
+	stroke: var(--servicetree-accent);
+	stroke-width: 1;
+	pointer-events: none;
+}
+
+.servicetree-chart-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.servicetree-zoom-label {
+	text-transform: none;
+	letter-spacing: 0;
+	color: var(--servicetree-accent);
+}
+
+.servicetree-reset-zoom {
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: 11px;
+}
+
+.servicetree-problems-loading {
+	height: 60px;
+	position: relative;
+}
+
+.servicetree-pager {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	margin-top: 8px;
+}
+
+.servicetree-pager-buttons {
+	display: inline-flex;
+	gap: 2px;
+}
+
+.servicetree-pager-buttons > button {
+	min-width: 24px;
+	height: 22px;
+	margin: 0;
+	padding: 0 6px;
+	border: 1px solid var(--servicetree-tile-border);
+	border-radius: 2px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	line-height: 20px;
+	cursor: pointer;
+}
+
+.servicetree-pager-buttons > button:hover:not(:disabled):not(.is-selected) {
+	background: var(--servicetree-selected);
+}
+
+.servicetree-pager-buttons > button.is-selected {
+	background: var(--servicetree-accent);
+	border-color: var(--servicetree-accent);
+	color: #fff;
+	cursor: default;
+}
+
+.servicetree-pager-buttons > button:disabled {
+	opacity: .4;
+	cursor: default;
+}
