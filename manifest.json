@@ -42,5 +42,5 @@
 		"max_problem_services": 1000,
 		"tags_per_query": 100
 	},
-	"url": "https://github.com/<your-account>/zabbix-module-service-tree"
+	"url": "https://github.com/lagavazzz/zabbix-service-tree/"
 }
