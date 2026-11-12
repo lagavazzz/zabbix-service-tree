@@ -10,7 +10,7 @@ problems that affected it.
 ![SLA popup – SLI per period](docs/screenshot-popup.png)
 *SLA popup: KPIs for the current period, SLI of the last 12 periods against the SLO, and the problems that affected the service.*
 
-![SLA popup – state over period with mouse zoom](docs/screenshot-graph.png)
+![SLA popup – state over period with mouse zoom](https://github.com/lagavazzz/zabbix-service-tree/blob/main/screenshot-graph.png#:~:text=screenshot%2Dgraph.-,png,-screenshot%2Dpopup.png)
 *State over period: status changes of the service during the month. Drag across the graph to zoom in; the problem list follows the selected time range.*
 
 ## Features
